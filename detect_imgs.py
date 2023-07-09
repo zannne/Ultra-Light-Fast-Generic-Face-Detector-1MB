@@ -20,7 +20,7 @@ parser.add_argument('--threshold', default=0.6, type=float,
                     help='score threshold')
 parser.add_argument('--candidate_size', default=1500, type=int,
                     help='nms candidate size')
-parser.add_argument('--path', default="imgs", type=str,
+parser.add_argument('--path', default="./face/imgs", type=str,
                     help='imgs dir')
 parser.add_argument('--test_device', default="cuda:0", type=str,
                     help='cuda:0 or cpu')
@@ -30,8 +30,8 @@ define_img_size(args.input_size)  # must put define_img_size() before 'import cr
 from vision.ssd.mb_tiny_fd import create_mb_tiny_fd, create_mb_tiny_fd_predictor
 from vision.ssd.mb_tiny_RFB_fd import create_Mb_Tiny_RFB_fd, create_Mb_Tiny_RFB_fd_predictor
 
-result_path = "./detect_imgs_results"
-label_path = "./models/voc-model-labels.txt"
+result_path = "./face/detect_imgs_results"
+label_path = "./face/models/voc-model-labels.txt"
 test_device = args.test_device
 
 class_names = [name.strip() for name in open(label_path).readlines()]
@@ -41,7 +41,7 @@ if args.net_type == 'slim':
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=args.candidate_size, device=test_device)
 elif args.net_type == 'RFB':
-    model_path = "models/pretrained/version-RFB-320.pth"
+    model_path = "./face/models/pretrained/version-RFB-320.pth"
     # model_path = "models/pretrained/version-RFB-640.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=args.candidate_size, device=test_device)
@@ -62,7 +62,7 @@ for file_path in listdir:
     sum += boxes.size(0)
     for i in range(boxes.size(0)):
         box = boxes[i, :]
-        cv2.rectangle(orig_image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
+        cv2.rectangle(orig_image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 0, 255), 2)
         # label = f"""{voc_dataset.class_names[labels[i]]}: {probs[i]:.2f}"""
         label = f"{probs[i]:.2f}"
         # cv2.putText(orig_image, label, (box[0], box[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
